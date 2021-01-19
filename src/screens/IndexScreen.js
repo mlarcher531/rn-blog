@@ -4,34 +4,44 @@ import { Feather } from '@expo/vector-icons'
 
 import { Context } from '../context/BlogContext'
 
-const IndexScreen = () => {
+const IndexScreen = ({ navigation }) => {
 
-    const { state, addBlogPost, deleteBlogPost } = useContext(Context)
+    const { state, deleteBlogPost } = useContext(Context)
 
     return (
         <View>
             <FlatList
                 data={state}
-                keyExtractor={(post) => post.id}
+                keyExtractor={(post) => post.id.toString()}
                 renderItem={({ item }) => {
                     return (
-                        <View style={styles.row}>
-                            <Text style={styles.title}>{item.title} - {item.id}</Text>
-                            <TouchableOpacity onPress={()=>deleteBlogPost(item.id)}>
-                                <Feather name="trash" style={styles.icon} />
-                            </TouchableOpacity>
-                        </View>)
+                        <TouchableOpacity onPress={() => navigation.navigate('Show', { id: item.id })}>
+                            <View style={styles.row}>
+                                <Text style={styles.title}>{item.title} - {item.id}</Text>
+                                <TouchableOpacity onPress={() => deleteBlogPost(item.id)}>
+                                    <Feather name="trash" style={styles.icon} />
+                                </TouchableOpacity>
+                            </View>
+                        </TouchableOpacity>
+                    )
                 }
                 }
-            />
-            <Button
-                title={'PRESS ME'}
-                onPress={addBlogPost}
             />
         </View>
     )
 
 }
+
+IndexScreen.navigationOptions = ({ navigation }) => {
+    return {
+        headerRight: () => (
+          <TouchableOpacity onPress={() => navigation.navigate('Create')}>
+            <Feather name="plus" size={30} style={styles.plus}/>
+          </TouchableOpacity>
+        ),
+      };
+}
+
 
 const styles = StyleSheet.create({
     row: {
@@ -47,6 +57,9 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 18,
+    },
+    plus:{
+        marginRight: 10,
     }
 })
 
